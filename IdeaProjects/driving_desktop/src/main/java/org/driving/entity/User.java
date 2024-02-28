@@ -25,7 +25,4 @@ public abstract class User {
     private String patronymic;
 
     private LocalDateTime birthDay;
-
-    private Role role;
-
 }
