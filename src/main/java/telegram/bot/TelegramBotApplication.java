@@ -10,10 +10,8 @@ import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.model.request.LabeledPrice;
 import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
-import com.pengrad.telegrambot.request.AnswerPreCheckoutQuery;
-import com.pengrad.telegrambot.request.CreateInvoiceLink;
-import com.pengrad.telegrambot.request.SendMessage;
-import com.pengrad.telegrambot.request.SendPhoto;
+import com.pengrad.telegrambot.request.*;
+import com.pengrad.telegrambot.response.SendResponse;
 import com.pengrad.telegrambot.response.StringResponse;
 import telegram.bot.service.OrderService;
 import telegram.bot.service.LaptopService;
@@ -26,12 +24,16 @@ import java.util.concurrent.Executors;
 public class TelegramBotApplication extends TelegramBot {
 
     private final ExecutorService executorService;
-
     private final LaptopService laptopService;
-
     private final OrderService orderService;
-
     private final String providerToken;
+
+    private InlineKeyboardMarkup keyboardMarkup;
+
+    private static final String SUPPORT_MARKET_NAME = "kelly_oubre";
+    private static final String TELEGRAM_DOMAIN = "t.me/%s";
+    private static final String SUPPORT_MARKET_LINK = String.format(TELEGRAM_DOMAIN, SUPPORT_MARKET_NAME);
+
 
     @lombok.Builder
     public TelegramBotApplication(String botToken, String providerToken) {
@@ -40,6 +42,9 @@ public class TelegramBotApplication extends TelegramBot {
         this.executorService = Executors.newFixedThreadPool(8);
         this.laptopService = LaptopService.getInstance();
         this.orderService = OrderService.getInstance();
+
+        keyboardMarkup = new InlineKeyboardMarkup(new InlineKeyboardButton("Поддержка")
+                .url(SUPPORT_MARKET_LINK));
     }
 
     public void run() {
@@ -107,6 +112,12 @@ public class TelegramBotApplication extends TelegramBot {
             }
             case "Отзывы": {
                 sendMessage(chatId, "На данный момент Market не содержит отзывов!");
+                break;
+            }
+            case "Поддержка": {
+                SendMessage sendMessage = new SendMessage(chatId, "Есть вопросы?")
+                        .replyMarkup(keyboardMarkup);
+                this.execute(sendMessage);
                 break;
             }
             default: {
