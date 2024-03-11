@@ -11,15 +11,9 @@ import java.time.Instant;
 public class Purchase {
 
     private String id;
-
     private String chatId;
-
     private String currency;
-
-    private Phone phone;
-
+    private Laptop laptop;
     private Instant purchaseDate;
-
     private OrderInfo orderInfo;
-
 }

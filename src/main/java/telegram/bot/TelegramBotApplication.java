@@ -16,7 +16,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SendPhoto;
 import com.pengrad.telegrambot.response.StringResponse;
 import telegram.bot.service.OrderService;
-import telegram.bot.service.PhoneService;
+import telegram.bot.service.LaptopService;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -26,11 +26,8 @@ import java.util.concurrent.Executors;
 public class TelegramBotApplication extends TelegramBot {
 
     private final ExecutorService executorService;
-
-    private final PhoneService phoneService;
-
+    private final LaptopService laptopService;
     private final OrderService orderService;
-
     private final String providerToken;
 
     @lombok.Builder
@@ -38,7 +35,7 @@ public class TelegramBotApplication extends TelegramBot {
         super(botToken);
         this.providerToken = Optional.ofNullable(providerToken).orElse("");
         this.executorService = Executors.newFixedThreadPool(8);
-        this.phoneService = PhoneService.getInstance();
+        this.laptopService = LaptopService.getInstance();
         this.orderService = OrderService.getInstance();
     }
 
@@ -71,13 +68,7 @@ public class TelegramBotApplication extends TelegramBot {
     private void serveCommand(String commandName, Long chatId) {
         switch (commandName) {
             case "/start": {
-                SendMessage response = new SendMessage(chatId,
-                        "Список команд:\n/menu - Главное меню\n/start - Начало работы");
-                this.execute(response);
-                break;
-            }
-            case "/menu": {
-                SendMessage response = new SendMessage(chatId, "Меню")
+                SendMessage response = new SendMessage(chatId, "Market приветствует Вас!")
                         .replyMarkup(new ReplyKeyboardMarkup(new String[][] {
                                 {"Товары", "Отзывы"},
                                 {"Поддержка"}
@@ -86,7 +77,7 @@ public class TelegramBotApplication extends TelegramBot {
                 break;
             }
             case "Товары": {
-                phoneService.getPhones()
+                laptopService.getPhones()
                         .forEach(phone -> {
                             CreateInvoiceLink link = new CreateInvoiceLink(phone.getName(), phone.getDescription(), phone.getId(),
                                     providerToken, "RUB",
@@ -95,11 +86,13 @@ public class TelegramBotApplication extends TelegramBot {
                                     .photoUrl(phone.getPhoto())
                                     .needName(true)
                                     .needPhoneNumber(true);
+
                             StringResponse response = execute(link);
                             SendPhoto sendPhoto = new SendPhoto(chatId, phone.getPhoto())
                                     .caption(String.format("%s - %s", phone.getName(), phone.getDescription()))
                                     .replyMarkup(new InlineKeyboardMarkup(
-                                            new InlineKeyboardButton("Оплатить").url(response.result())
+                                            new InlineKeyboardButton("Оплатить")
+                                                    .url(response.result())
                                     ));
                             execute(sendPhoto);
                         });

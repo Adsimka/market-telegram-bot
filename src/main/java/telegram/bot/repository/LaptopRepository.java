@@ -5,37 +5,37 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import telegram.bot.config.ObjectMapperConfig;
-import telegram.bot.model.Phone;
+import telegram.bot.model.Laptop;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class PhoneRepository {
-
-    private static final PhoneRepository INSTANCE = new PhoneRepository(
-            ObjectMapperConfig.getInstance()
-    );
+public class LaptopRepository {
 
     private final ObjectMapper objectMapper;
 
+    private static final LaptopRepository INSTANCE = new LaptopRepository(
+            ObjectMapperConfig.getInstance()
+    );
+
     @SneakyThrows
-    public List<Phone> readPhones() {
-        List<Phone> phones = new ArrayList<>();
+    public List<Laptop> readPhones() {
+        List<Laptop> laptops = new ArrayList<>();
 
         try (InputStream phoneStream = getClass().getClassLoader()
-                .getResourceAsStream("phones.json")) {
+                .getResourceAsStream("laptops.json")) {
             JsonNode rootNode = objectMapper.readTree(phoneStream);
-            if (rootNode.hasNonNull("phones")) {
-                JsonNode phonesNode = rootNode.get("phones");
-                phones.addAll(List.of(objectMapper.convertValue(phonesNode, Phone[].class)));
+            if (rootNode.hasNonNull("laptops")) {
+                JsonNode phonesNode = rootNode.get("laptops");
+                laptops.addAll(List.of(objectMapper.convertValue(phonesNode, Laptop[].class)));
             }
         }
-        return phones;
+        return laptops;
     }
 
-    public static PhoneRepository getInstance() {
+    public static LaptopRepository getInstance() {
         return INSTANCE;
     }
 
