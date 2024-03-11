@@ -98,12 +98,20 @@ public class TelegramBotApplication extends TelegramBot {
                         });
                 break;
             }
+            case "Отзывы": {
+                sendMessage(chatId, "На данный момент Market не содержит отзывов!");
+                break;
+            }
             default: {
-                SendMessage response = new SendMessage(chatId, "Команда не распознана");
-                this.execute(response);
+                sendMessage(chatId, "Команда не распознана");
                 break;
             }
         }
+    }
+
+    private void sendMessage(Long chatId, String message) {
+        SendMessage response = new SendMessage(chatId, message);
+        this.execute(response);
     }
 
 }
