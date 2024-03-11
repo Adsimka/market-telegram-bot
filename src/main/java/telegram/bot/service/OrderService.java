@@ -15,24 +15,24 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class OrderService {
 
-    private static final OrderService INSTANCE = new OrderService(PhoneService.getInstance(),
+    private static final OrderService INSTANCE = new OrderService(LaptopService.getInstance(),
             ObjectMapperConfig.getInstance());
 
-    private final PhoneService phoneService;
+    private final LaptopService laptopService;
 
     private final ObjectMapper objectMapper;
 
     public void createPurchase(SuccessfulPayment payment, Long chatId) {
-        String phoneId = payment.invoicePayload();
-        phoneService.getPhones().stream()
-                .filter(phone -> phone.getId().equals(phoneId))
+        String laptopId = payment.invoicePayload();
+        laptopService.getLaptops().stream()
+                .filter(laptop -> laptop.getId().equals(laptopId))
                 .findAny()
-                .map(phone -> Purchase.builder()
+                .map(laptop -> Purchase.builder()
                         .id(UUID.randomUUID().toString())
                         .currency(payment.currency())
                         .chatId(chatId.toString())
                         .orderInfo(payment.orderInfo())
-                        .phone(phone)
+                        .laptop(laptop)
                         .purchaseDate(Instant.now())
                         .build())
                 .ifPresent(purchase -> {

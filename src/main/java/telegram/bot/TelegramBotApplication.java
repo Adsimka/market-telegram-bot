@@ -16,7 +16,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SendPhoto;
 import com.pengrad.telegrambot.response.StringResponse;
 import telegram.bot.service.OrderService;
-import telegram.bot.service.PhoneService;
+import telegram.bot.service.LaptopService;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -27,7 +27,7 @@ public class TelegramBotApplication extends TelegramBot {
 
     private final ExecutorService executorService;
 
-    private final PhoneService phoneService;
+    private final LaptopService laptopService;
 
     private final OrderService orderService;
 
@@ -38,7 +38,7 @@ public class TelegramBotApplication extends TelegramBot {
         super(botToken);
         this.providerToken = Optional.ofNullable(providerToken).orElse("");
         this.executorService = Executors.newFixedThreadPool(8);
-        this.phoneService = PhoneService.getInstance();
+        this.laptopService = LaptopService.getInstance();
         this.orderService = OrderService.getInstance();
     }
 
@@ -86,18 +86,18 @@ public class TelegramBotApplication extends TelegramBot {
                 break;
             }
             case "Товары": {
-                phoneService.getPhones()
-                        .forEach(phone -> {
-                            CreateInvoiceLink link = new CreateInvoiceLink(phone.getName(), phone.getDescription(), phone.getId(),
+                laptopService.getLaptops()
+                        .forEach(laptop -> {
+                            CreateInvoiceLink link = new CreateInvoiceLink(laptop.getName(), laptop.getDescription(), laptop.getId(),
                                     providerToken, "RUB",
-                                    new LabeledPrice("Цена", phone.getPrice().multiply(BigDecimal.valueOf(100L)).intValue()))
+                                    new LabeledPrice("Цена", laptop.getPrice().multiply(BigDecimal.valueOf(100L)).intValue()))
                                     .needShippingAddress(true)
-                                    .photoUrl(phone.getPhoto())
+                                    .photoUrl(laptop.getPhoto())
                                     .needName(true)
                                     .needPhoneNumber(true);
                             StringResponse response = execute(link);
-                            SendPhoto sendPhoto = new SendPhoto(chatId, phone.getPhoto())
-                                    .caption(String.format("%s - %s", phone.getName(), phone.getDescription()))
+                            SendPhoto sendPhoto = new SendPhoto(chatId, laptop.getPhoto())
+                                    .caption(String.format("%s - %s", laptop.getName(), laptop.getDescription()))
                                     .replyMarkup(new InlineKeyboardMarkup(
                                             new InlineKeyboardButton("Оплатить").url(response.result())
                                     ));
@@ -105,12 +105,20 @@ public class TelegramBotApplication extends TelegramBot {
                         });
                 break;
             }
+            case "Отзывы": {
+                sendMessage(chatId, "На данный момент Market не содержит отзывов!");
+                break;
+            }
             default: {
-                SendMessage response = new SendMessage(chatId, "Команда не распознана");
-                this.execute(response);
+                sendMessage(chatId, "Команда не распознана!");
                 break;
             }
         }
+    }
+
+    private void sendMessage(Long chatId, String message) {
+        SendMessage response = new SendMessage(chatId, message);
+        this.execute(response);
     }
 
 }

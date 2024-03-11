@@ -16,7 +16,7 @@ public class Purchase {
 
     private String currency;
 
-    private Phone phone;
+    private Laptop laptop;
 
     private Instant purchaseDate;
 
