@@ -1,0 +1,25 @@
+{
+  "laptops": [
+    {
+      "id": "unique_id_1",
+      "name": "Apple MacBook Air 13",
+      "price": 89999,
+      "description": "M1/8/256 Space Gray",
+      "photo": "https://img.mvideo.ru/Pdb/30064273b.jpg"
+    },
+    {
+      "id": "unique_id_2",
+      "name": "Apple MacBook Air 15",
+      "price": 149999,
+      "description": "M2 8/256Gb Midnight",
+      "photo": "https://img.mvideo.ru/Big/30067728bb.jpg"
+    },
+    {
+      "id": "unique_id_3",
+      "name": "Apple MacBook Pro 14",
+      "price": 249999,
+      "description": "M3 Pro 11/14 core/18/512 Space Black",
+      "photo": "https://img.mvideo.ru/Pdb/30069945b.jpg"
+    }
+  ]
+}
