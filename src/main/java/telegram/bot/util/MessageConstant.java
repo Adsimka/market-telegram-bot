@@ -19,4 +19,6 @@ public class MessageConstant {
     public static final String RUB = "RUB";
     public static final String PRICE = "Цена";
 
+    public static final String NOT_TRANSACTIONAL = "Транзакция не прошла полностью!";
+
 }
