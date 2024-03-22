@@ -20,7 +20,7 @@ public class Purchase {
     private String currency;
     @OneToMany
     @JoinColumn(name = "id")
-    private Laptop laptop;
+    private Product product;
 
     private Instant purchaseDate;
     @OneToOne

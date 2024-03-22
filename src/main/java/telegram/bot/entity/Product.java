@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Laptop {
+public class Product {
     @Id
     private String id;
     @Column(nullable = false)

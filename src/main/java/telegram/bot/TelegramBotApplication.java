@@ -15,8 +15,7 @@ import com.pengrad.telegrambot.request.CreateInvoiceLink;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SendPhoto;
 import com.pengrad.telegrambot.response.StringResponse;
-import lombok.Builder;
-import telegram.bot.service.LaptopService;
+import telegram.bot.service.ProductService;
 import telegram.bot.service.OrderService;
 
 import java.math.BigDecimal;
@@ -29,7 +28,7 @@ import static telegram.bot.util.MessageConstant.*;
 public class TelegramBotApplication extends TelegramBot {
 
     private final ExecutorService executorService;
-    private final LaptopService laptopService;
+    private final ProductService productService;
     private final OrderService orderService;
     private final String providerToken;
 
@@ -45,7 +44,7 @@ public class TelegramBotApplication extends TelegramBot {
         super(botToken);
         this.providerToken = Optional.ofNullable(providerToken).orElse("");
         this.executorService = Executors.newFixedThreadPool(8);
-        this.laptopService = LaptopService.getInstance();
+        this.productService = ProductService.getInstance();
         this.orderService = OrderService.getInstance();
 
         keyboardMarkup = new InlineKeyboardMarkup(new InlineKeyboardButton(TECHNICAL_SUPPORT)
@@ -74,10 +73,6 @@ public class TelegramBotApplication extends TelegramBot {
         }
     }
 
-    private void servePayment(SuccessfulPayment payment, Long id) {
-        orderService.registryPurchase(payment, id);
-    }
-
     private void serveCommand(String commandName, Long chatId) {
         switch (commandName) {
             case START_COMMAND: {
@@ -95,7 +90,7 @@ public class TelegramBotApplication extends TelegramBot {
                 break;
             }
             case PURCHASE: {
-                laptopService.getLaptops()
+                productService.getLaptops()
                         .forEach(laptop -> {
                             CreateInvoiceLink link = new CreateInvoiceLink(laptop.getName(), laptop.getDescription(), laptop.getId(),
                                     providerToken, RUB,
@@ -129,6 +124,10 @@ public class TelegramBotApplication extends TelegramBot {
                 break;
             }
         }
+    }
+
+    private void servePayment(SuccessfulPayment payment, Long id) {
+        orderService.registryPurchase(payment, id);
     }
 
     private void sendMessage(Long chatId, String message) {
