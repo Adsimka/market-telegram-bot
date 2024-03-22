@@ -12,10 +12,10 @@ import java.math.BigDecimal;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Product {
+@NoArgsConstructor
+public class Product implements BaseEntity<String> {
     @Id
     private String id;
     @Column(nullable = false)
