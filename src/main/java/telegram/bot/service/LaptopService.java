@@ -1,7 +1,7 @@
 package telegram.bot.service;
 
 import lombok.RequiredArgsConstructor;
-import telegram.bot.model.Laptop;
+import telegram.bot.entity.Laptop;
 import telegram.bot.repository.LaptopRepository;
 
 import java.util.List;

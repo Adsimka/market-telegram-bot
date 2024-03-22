@@ -5,7 +5,7 @@ import com.pengrad.telegrambot.model.SuccessfulPayment;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import telegram.bot.config.ObjectMapperConfig;
-import telegram.bot.model.Purchase;
+import telegram.bot.entity.Purchase;
 
 import java.io.File;
 import java.io.FileOutputStream;

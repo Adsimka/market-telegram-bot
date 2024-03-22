@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import telegram.bot.config.ObjectMapperConfig;
-import telegram.bot.model.Laptop;
+import telegram.bot.entity.Laptop;
 
 import java.io.InputStream;
 import java.util.ArrayList;

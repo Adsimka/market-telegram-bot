@@ -1,10 +1,7 @@
-package telegram.bot.model;
+package telegram.bot.entity;
 
 import com.pengrad.telegrambot.model.OrderInfo;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,11 +19,10 @@ public class Purchase {
     private String chatId;
 
     private String currency;
-
+    @OneToMany
     private Laptop laptop;
 
     private Instant purchaseDate;
 
     private OrderInfo orderInfo;
-
 }
