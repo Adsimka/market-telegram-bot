@@ -22,5 +22,4 @@ public class LaptopService {
     public static LaptopService getInstance() {
         return INSTANCE;
     }
-
 }

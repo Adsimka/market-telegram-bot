@@ -5,50 +5,69 @@ import com.pengrad.telegrambot.model.SuccessfulPayment;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import telegram.bot.config.ObjectMapperConfig;
+import telegram.bot.entity.Laptop;
+import telegram.bot.entity.OrderInfo;
 import telegram.bot.entity.Purchase;
+import telegram.bot.entity.ShippingAddress;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.time.Instant;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class OrderService {
-
-    private static final OrderService INSTANCE = new OrderService(LaptopService.getInstance(),
-            ObjectMapperConfig.getInstance());
 
     private final LaptopService laptopService;
 
     private final ObjectMapper objectMapper;
 
-    public void createPurchase(SuccessfulPayment payment, Long chatId) {
+    private static final OrderService INSTANCE = new OrderService(LaptopService.getInstance(),
+            ObjectMapperConfig.getInstance());
+
+    public Optional<Purchase> registryPurchase(SuccessfulPayment payment, Long chatId) {
         String laptopId = payment.invoicePayload();
-        laptopService.getLaptops().stream()
+
+        Optional<Purchase> purchase = laptopService.getLaptops().stream()
                 .filter(laptop -> laptop.getId().equals(laptopId))
                 .findAny()
-                .map(laptop -> Purchase.builder()
-                        .currency(payment.currency())
-                        .chatId(chatId.toString())
-                        .orderInfo(payment.orderInfo())
-                        .laptop(laptop)
-                        .purchaseDate(Instant.now())
-                        .build())
-                .ifPresent(purchase -> {
-                    String orderPath = String.format("orders/%s.json");
-                    createPurchaseFile(orderPath, purchase);
-                });
+                .map(laptop -> buildPurchase(payment, chatId, laptop));
+
+        return purchase;
     }
 
-    @SneakyThrows
-    private void createPurchaseFile(String path, Purchase purchase) {
-        File file = new File(path);
-        if (!file.exists()) {
-            file.getParentFile().mkdir();
-            file.createNewFile();
-        } try (FileOutputStream stream = new FileOutputStream(file)) {
-            objectMapper.writerWithDefaultPrettyPrinter()
-                    .writeValue(stream, purchase);
-        }
+    private static Purchase buildPurchase(SuccessfulPayment payment, Long chatId, Laptop laptop) {
+        return Purchase.builder()
+                .currency(payment.currency())
+                .chatId(chatId.toString())
+                .orderInfo(OrderInfo.builder()
+                        .name(payment.orderInfo().name())
+                        .email(payment.orderInfo().email())
+                        .phoneNumber(payment.orderInfo().phoneNumber())
+                        .shippingAddress(ShippingAddress.builder()
+                                .countryCode(payment.orderInfo()
+                                        .shippingAddress()
+                                        .countryCode())
+                                .state(payment.orderInfo()
+                                        .shippingAddress()
+                                        .state())
+                                .city(payment.orderInfo()
+                                        .shippingAddress()
+                                        .city())
+                                .firstStreetLine(payment.orderInfo()
+                                        .shippingAddress()
+                                        .streetLine1())
+                                .secondStreetLine(payment.orderInfo()
+                                        .shippingAddress()
+                                        .streetLine2())
+                                .postCode(payment.orderInfo()
+                                        .shippingAddress()
+                                        .postCode())
+                                .build())
+                        .build())
+                .laptop(laptop)
+                .purchaseDate(Instant.now())
+                .build();
     }
 
     public static OrderService getInstance() {

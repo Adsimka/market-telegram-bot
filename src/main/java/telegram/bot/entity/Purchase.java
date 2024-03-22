@@ -19,6 +19,7 @@ public class Purchase {
 
     private String currency;
     @OneToMany
+    @JoinColumn(name = "id")
     private Laptop laptop;
 
     private Instant purchaseDate;

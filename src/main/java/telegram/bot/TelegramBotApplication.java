@@ -73,7 +73,7 @@ public class TelegramBotApplication extends TelegramBot {
     }
 
     private void servePayment(SuccessfulPayment payment, Long id) {
-        orderService.createPurchase(payment, id);
+        orderService.registryPurchase(payment, id);
     }
 
     private void serveCommand(String commandName, Long chatId) {
