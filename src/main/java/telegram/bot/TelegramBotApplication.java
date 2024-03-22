@@ -24,6 +24,8 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static telegram.bot.util.MessageConstant.*;
+
 public class TelegramBotApplication extends TelegramBot {
 
     private final ExecutorService executorService;
@@ -46,7 +48,7 @@ public class TelegramBotApplication extends TelegramBot {
         this.laptopService = LaptopService.getInstance();
         this.orderService = OrderService.getInstance();
 
-        keyboardMarkup = new InlineKeyboardMarkup(new InlineKeyboardButton("Поддержка")
+        keyboardMarkup = new InlineKeyboardMarkup(new InlineKeyboardButton(TECHNICAL_SUPPORT)
                 .url(SUPPORT_MARKET_LINK));
     }
 
@@ -78,27 +80,26 @@ public class TelegramBotApplication extends TelegramBot {
 
     private void serveCommand(String commandName, Long chatId) {
         switch (commandName) {
-            case "/start": {
-                SendMessage response = new SendMessage(chatId,
-                        "Добро пожаловать в Market!\n\nСписок команд:\n  /menu - Главное меню\n  /start - Начало работы");
+            case START_COMMAND: {
+                SendMessage response = new SendMessage(chatId, WELCOME_MESSAGE);
                 this.execute(response);
                 break;
             }
-            case "/menu": {
-                SendMessage response = new SendMessage(chatId, "Выберите раздел:")
+            case MENU_COMMAND: {
+                SendMessage response = new SendMessage(chatId, SELECT_SECTION)
                         .replyMarkup(new ReplyKeyboardMarkup(new String[][] {
-                                {"Товары", "Отзывы"},
-                                {"Поддержка"}
+                                {PURCHASE, FEEDBACK},
+                                {TECHNICAL_SUPPORT}
                         }).resizeKeyboard(true));
                 this.execute(response);
                 break;
             }
-            case "Товары": {
+            case PURCHASE: {
                 laptopService.getLaptops()
                         .forEach(laptop -> {
                             CreateInvoiceLink link = new CreateInvoiceLink(laptop.getName(), laptop.getDescription(), laptop.getId(),
-                                    providerToken, "RUB",
-                                    new LabeledPrice("Цена", laptop.getPrice().multiply(BigDecimal.valueOf(100L)).intValue()))
+                                    providerToken, RUB,
+                                    new LabeledPrice(PRICE, laptop.getPrice().multiply(BigDecimal.valueOf(100L)).intValue()))
                                     .needShippingAddress(true)
                                     .photoUrl(laptop.getPhoto())
                                     .needName(true)
@@ -107,24 +108,24 @@ public class TelegramBotApplication extends TelegramBot {
                             SendPhoto sendPhoto = new SendPhoto(chatId, laptop.getPhoto())
                                     .caption(String.format("%s - %s", laptop.getName(), laptop.getDescription()))
                                     .replyMarkup(new InlineKeyboardMarkup(
-                                            new InlineKeyboardButton("Оплатить").url(response.result())
+                                            new InlineKeyboardButton(PAY).url(response.result())
                                     ));
                             execute(sendPhoto);
                         });
                 break;
             }
-            case "Отзывы": {
-                sendMessage(chatId, "На данный момент Market не содержит отзывов!");
+            case FEEDBACK: {
+                sendMessage(chatId, NOT_FEEDBACK);
                 break;
             }
-            case "Поддержка": {
-                SendMessage sendMessage = new SendMessage(chatId, "Есть вопросы?")
+            case TECHNICAL_SUPPORT: {
+                SendMessage sendMessage = new SendMessage(chatId, CHANGE_CHANNEL)
                         .replyMarkup(keyboardMarkup);
                 this.execute(sendMessage);
                 break;
             }
             default: {
-                sendMessage(chatId, "Команда не распознана!");
+                sendMessage(chatId, COMMAND_NOT_RECOGNIZED);
                 break;
             }
         }
