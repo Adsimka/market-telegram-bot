@@ -1,6 +1,5 @@
 package telegram.bot.entity;
 
-import com.pengrad.telegrambot.model.OrderInfo;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +22,6 @@ public class Purchase {
     private Laptop laptop;
 
     private Instant purchaseDate;
-
+    @OneToOne
     private OrderInfo orderInfo;
 }

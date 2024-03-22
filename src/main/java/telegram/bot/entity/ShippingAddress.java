@@ -2,27 +2,29 @@ package telegram.bot.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Entity
 @Builder
-public class OrderInfo {
+public class ShippingAddress {
     @Id
     private Long id;
 
-    private String name;
+    private String countryCode;
 
-    private String phoneNumber;
+    private String state;
 
-    private String email;
+    private String city;
 
-    @OneToOne
-    private ShippingAddress shippingAddress;
+    private String firstStreetLine;
+
+    private String secondStreetLine;
+
+    private String postCode;
 }
