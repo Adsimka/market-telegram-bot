@@ -1,5 +1,8 @@
 package telegram.bot.util;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class MessageConstant {
     public static final String WELCOME_MESSAGE = "Добро пожаловать в Market!";
 

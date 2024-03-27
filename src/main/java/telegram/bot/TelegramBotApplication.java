@@ -83,7 +83,7 @@ public class TelegramBotApplication extends TelegramBot {
             }
             case MENU_COMMAND: {
                 SendMessage response = new SendMessage(chatId, SELECT_SECTION)
-                        .replyMarkup(new ReplyKeyboardMarkup(new String[][] {
+                        .replyMarkup(new ReplyKeyboardMarkup(new String[][]{
                                 {PURCHASE, FEEDBACK},
                                 {TECHNICAL_SUPPORT}
                         }).resizeKeyboard(true));
