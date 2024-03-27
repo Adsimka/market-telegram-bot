@@ -24,5 +24,5 @@ public class Purchase {
 
     private Instant purchaseDate;
     @OneToOne
-    private OrderInfo orderInfo;
+    private OrderInfo  orderInfo;
 }

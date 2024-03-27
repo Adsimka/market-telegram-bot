@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Builder
-public class OrderInfo implements BaseEntity<Long> {
+public class OrderInfo {
     @Id
     private Long id;
     @Column(nullable = false)

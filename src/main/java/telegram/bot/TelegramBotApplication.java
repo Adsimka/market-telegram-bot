@@ -15,9 +15,9 @@ import com.pengrad.telegrambot.request.CreateInvoiceLink;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SendPhoto;
 import com.pengrad.telegrambot.response.StringResponse;
-import telegram.bot.dao.PurchaseDao;
-import telegram.bot.service.ProductService;
+import telegram.bot.entity.Product;
 import telegram.bot.service.OrderService;
+import telegram.bot.service.ProductService;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -93,20 +93,7 @@ public class TelegramBotApplication extends TelegramBot {
             case PURCHASE: {
                 productService.getLaptops()
                         .forEach(laptop -> {
-                            CreateInvoiceLink link = new CreateInvoiceLink(laptop.getName(), laptop.getDescription(), laptop.getId(),
-                                    providerToken, RUB,
-                                    new LabeledPrice(PRICE, laptop.getPrice().multiply(BigDecimal.valueOf(100L)).intValue()))
-                                    .needShippingAddress(true)
-                                    .photoUrl(laptop.getPhoto())
-                                    .needName(true)
-                                    .needPhoneNumber(true);
-                            StringResponse response = execute(link);
-                            SendPhoto sendPhoto = new SendPhoto(chatId, laptop.getPhoto())
-                                    .caption(String.format("%s - %s", laptop.getName(), laptop.getDescription()))
-                                    .replyMarkup(new InlineKeyboardMarkup(
-                                            new InlineKeyboardButton(PAY).url(response.result())
-                                    ));
-                            execute(sendPhoto);
+                            sendProduct(chatId, laptop);
                         });
                 break;
             }
@@ -127,8 +114,25 @@ public class TelegramBotApplication extends TelegramBot {
         }
     }
 
-    private void servePayment(SuccessfulPayment payment, Long id) {
-        orderService.registryPurchase(payment, id);
+    private void sendProduct(Long chatId, Product laptop) {
+        CreateInvoiceLink link = new CreateInvoiceLink(laptop.getName(), laptop.getDescription(), laptop.getId(),
+                providerToken, RUB,
+                new LabeledPrice(PRICE, laptop.getPrice().multiply(BigDecimal.valueOf(100L)).intValue()))
+                .needShippingAddress(true)
+                .photoUrl(laptop.getPhoto())
+                .needName(true)
+                .needPhoneNumber(true);
+        StringResponse response = execute(link);
+        SendPhoto sendPhoto = new SendPhoto(chatId, laptop.getPhoto())
+                .caption(String.format("%s - %s", laptop.getName(), laptop.getDescription()))
+                .replyMarkup(new InlineKeyboardMarkup(
+                        new InlineKeyboardButton(PAY).url(response.result())
+                ));
+        execute(sendPhoto);
+    }
+
+    private void servePayment(SuccessfulPayment payment, Long chatId) {
+        orderService.registryOrder(payment, chatId);
     }
 
     private void sendMessage(Long chatId, String message) {

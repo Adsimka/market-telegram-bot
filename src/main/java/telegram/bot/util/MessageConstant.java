@@ -1,7 +1,7 @@
 package telegram.bot.util;
 
 public class MessageConstant {
-    public static final String WELCOME_MESSAGE = "Добро пожаловать в Market!\n\nСписок команд:\n  /menu - Главное меню\n  /start - Начало работы";
+    public static final String WELCOME_MESSAGE = "Добро пожаловать в Market!";
 
     public static final String START_COMMAND = "/start";
     public static final String MENU_COMMAND = "/menu";

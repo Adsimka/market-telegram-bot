@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Entity
 @NoArgsConstructor
-public class Product implements BaseEntity<String> {
+public class Product {
     @Id
     private String id;
     @Column(nullable = false)

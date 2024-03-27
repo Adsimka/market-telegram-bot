@@ -2,8 +2,9 @@ package telegram.bot.service;
 
 import com.pengrad.telegrambot.model.SuccessfulPayment;
 import lombok.RequiredArgsConstructor;
-import telegram.bot.entity.Product;
+import telegram.bot.dao.PurchaseDao;
 import telegram.bot.entity.OrderInfo;
+import telegram.bot.entity.Product;
 import telegram.bot.entity.Purchase;
 import telegram.bot.entity.ShippingAddress;
 
@@ -14,12 +15,21 @@ import java.util.Optional;
 public class OrderService {
 
     private final ProductService productService;
+    private final PurchaseDao purchaseDao;
 
     private static final OrderService INSTANCE = new OrderService(
-            ProductService.getInstance()
+            ProductService.getInstance(), PurchaseDao.getInstance()
     );
 
-    public Optional<Purchase> registryPurchase(SuccessfulPayment payment, Long chatId) {
+
+    public void registryOrder(SuccessfulPayment payment, Long chatId) {
+        Optional<Purchase> purchase = createPurchase(payment, chatId);
+        if (purchase.isPresent()) {
+            purchaseDao.save(purchase.get());
+        }
+    }
+
+    private Optional<Purchase> createPurchase(SuccessfulPayment payment, Long chatId) {
         String laptopId = payment.invoicePayload();
 
         Optional<Purchase> purchase = productService.getLaptops().stream()
@@ -30,7 +40,7 @@ public class OrderService {
         return purchase;
     }
 
-    private static Purchase buildPurchase(SuccessfulPayment payment, Long chatId, Product product) {
+    private Purchase buildPurchase(SuccessfulPayment payment, Long chatId, Product product) {
         return Purchase.builder()
                 .currency(payment.currency())
                 .chatId(chatId.toString())
